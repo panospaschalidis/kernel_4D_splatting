@@ -94,7 +94,7 @@ only the most challenging one, where we can see a man dancing "Pentozali".
 
 ![](./media/train.png)
 HexPlane is by far the most dominant during training as it tends to overfit extremely as a grid based model.
-Surprsingly enough worst performance is demonstreated by `ShapeofMotion` which was somehow expected as it is most focusewd on tracking and less to novel view synthesis.
+Surprsingly enough worst performance is demonstreated by `ShapeofMotion` which was somehow expected as it is mostly focused on tracking and less to novel view synthesis.
 ## Evaluation
 
 ![](./media/test.png)
