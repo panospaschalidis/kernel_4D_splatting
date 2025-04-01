@@ -19,7 +19,7 @@ Network](https://openreview.net/forum?id=OmtmcPkkhT) is employed as a
 **kernel/similarity** function of the combined features.
 
 ## Pipeline
-
+![](./media/pipeline.png)
 ## Installation
 ```
 conda create --name ellipsis python=3.10
@@ -57,7 +57,9 @@ Having obtained the colmap parameters run custom_colmap.sh to form a data direct
 
 ## Training
 
-![](./media/random_gaussians.png)
+![](./media/train.png)
 
 ## Evaluation
 
+![](./media/test.png)
+![](./media/metrics.png)
