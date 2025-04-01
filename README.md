@@ -72,6 +72,20 @@ Having obtained the colmap parameters run custom_colmap.sh to form a data direct
 That is why we run
 3. Run bash custom_colmap.sh
 ```
+## Baselines
+All our baselines are 4D Gaussian Splatting frameworks that employ different strategies 
+to achive novel view synthesis
+1. [4D-Gaussian-HexPlane](https://github.com/hustvl/4DGaussians)
+Pretty similar to ours with main difference in HexPlane interpolation.
+2. [4D-Gaussian-Rotor](https://github.com/weify627/4D-Rotor-Gaussians)
+Employing Rotor to model 4D rotations in order to create an actual 4D representaion
+that can be optimized though bayesian probalistic identities.
+3. [4D-Gaussian-VanElfrinkof](https://github.com/fudan-zvg/4d-gaussian-splatting)
+Same with former baseline with only difference in the way they model 4D rotatios. Van 
+Elfrinkof formula is used for this cause.
+4. [Shape-of-Motion](https://github.com/vye16/shape-of-motion/)
+A whole differnet approach where a canonical set is deformed from frame to frame based on
+optimizable SE3 motion bases i.e. rotation and translation.
 
 ## Training
 We experimented with even more challenging dymamic scenes such as the one presented below.
@@ -86,7 +100,7 @@ Surprsingly enough worst performance is demonstreated by `ShapeofMotion` which w
 ![](./media/test.png)
 
 Shape of motion utilizes the whole video sequence during training, thus there
-is no room left for inference.  The Iphone dataset and the modified NVIDIA
+is no room left for inference.  The [Iphone](https://github.com/KAIR-BAIR/dycheck) dataset and the modified [NVIDIA](https://github.com/gaochen315/DynamicNeRF)
 12-frame dataset are special versions of dynamic scenes where static rigs of
 cameras were used to capture the scene. That being said when they refer to
 novel view synthesis they consider as novel view, a novel viewpoint for an
