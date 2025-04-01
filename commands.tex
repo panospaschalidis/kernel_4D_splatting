@@ -1,0 +1,65 @@
+% Train HyperNeRF
+python train.py -s data/hypernerf/virg/broom2/ --port 6017 --expname "hypernerf/broom2" --configs arguments/hypernerf/broom2.py  --model_path output/hypernerf/broom
+
+% Train DNeRF
+python train.py -s data/dnerf/hook --port 6017 --expname "dnerf/hook" --configs arguments/dnerf/hook.py  --model_path output/dnerf/hook
+
+% Train CVD
+python train.py -s data/CVD/boy/ --port 6017 --expname "CVD/boy" --configs arguments/CVD/boy.py  --model_path output/CVD/boy
+
+% Render DNeRF
+python render.py --model_path output/dnerf/hook --skip_train --configs arguments/dnerf/hook.py 
+
+% Render CVD
+python render.py --model_path output/CVD/boy --skip_train --configs arguments/CVD/boy.py
+
+% Render Custom
+python train.py -s data/custom/cretans_30/ --port 6017 --expname "custom/cretans_30" --configs arguments/custom/cretan.py
+
+% Render Custom Slow Motion
+python train_240.py -s data/custom/cretans_240/ --port 6017 --expname "custom/cretans_240" --configs arguments/custom/cretan_240.py
+
+% test
+python train.py -s data/custom/cretan --port 6017 --expname "custom/test" --configs arguments/custom/cretan.py
+
+
+% overfit train probably just coarse
+1. set args.coarse_iterations equal to args.iterations in main
+2. uncomment line 81-82 that set viewpoint_stack to a list of
+one just camera 
+ 81 viewpoint_stack = [viewpoint_stack[104]]
+ 82 temp_list = copy.deepcopy(viewpoint_stack)
+ 83 print(f"overfitting to {viewpoint_stack[0].frame_name}")
+3. set checkpoint in arguments as in scene_reconstruction beginning
+it is where it is set the type of training coarse or fine
+4. run 
+ python train.py -s data/custom/cretan --port 6017 --expname "custom/cretan_overfit_{frame_number}" --configs arguments/custom/cretan.py
+4. Set checkpoint
+% fine train with formerly overfitted model parameters with no densification
+1. In case you have forgotten to previosulsy set checkpoint in arguments we have to
+trick the system.
+a.
+    In def training uncomment 
+    scene = Scene(dataset, gaussians, load_coarse=None)#load_iteration=14000
+    so as to initalize scene object with given gaussian parameters from the model_path
+b. add a pdb.set_trace before the first scene_reconstruction call 
+c.  Run train.py with these arguments
+    python train.py -s data/custom/cretan --port 6017 --expname "custom/cretan_for_trials_fine" --configs     arguments/custom/cretan.py --start_checkpoint output/custom/cretan_for_trials_fine/chkpnt_fine_14000    .pth -m output/custom/cretan_overfit_000168/
+d. Hit the above
+    gaussians.training_setup(opt)
+    iter=14000
+    stage='fine'
+    torch.save((gaussians.capture(), iteration), scene.model_path + "/chkpnt" +f"_{stage}_" + str(iteration) + ".pth")
+
+Now you have created your checkpoint, but it is loaded in your model_path.
+mv this to the desired directory and you are ready to go
+2. Run the folowing after commenting the load_iteration =14000 from 1.a. and 81-83 lines 
+from %overfit train probably just coarse
+python train.py -s data/custom/cretan --port 6017 --expname "custom/cretan_for_trials_fine" --configs arguments/custom/cretan.py --start_checkpoint output/custom/cretan_for_trials_fine/chkpnt_fine_14000.pth
+
+%% fine checkpoints mfn
+% camera 130 fine_mfn_nan_chckpoint.pth 116164 gaussian
+% camera 101 fine_nan_2.pth 123708 gaussian
+% camera 40 fine_nan_final.pth 123708 gaussian
+% camera 118 fine_nan_time.pth
+% camera 89 nan

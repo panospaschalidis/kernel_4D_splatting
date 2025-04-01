@@ -1,0 +1,16 @@
+% selected_render
+python selected_render.py --source_path ../data/custom/cretan --model_path ../output/custom/cretan --skip_train --configs ../arguments/custom/cretan.py
+
+
+% gaussina_rasterizer_tester
+%% coarse
+python gaussian_rasterizer_tester.py --source_path ../data/custom/cretan --model_path ../output/custom/cretan_overfit_000168 --train --configs ../arguments/custom/cretan.py --frame 'frame_000168.png'
+
+%% fine
+python gaussian_rasterizer_tester.py --source_path ../data/custom/cretan --model_path ../output/custom/cretan --train --configs ../arguments/custom/cretan.py --frame 'frame_000169.png' --stage fine
+
+%% gaus_hex env
+python gaussian_rasterizer_tester.py --source_path ../data/custom/cretan --model_path ../output/custom/cretan --test --configs ../arguments/custom/cretan.py --frame 'frame_000169' --stage fine --env_gaus_hex
+
+%% double_splat env
+python gaussian_rasterizer_tester.py --source_path ../data/custom/cretan --model_path ../output/custom/cretan --test --configs ../arguments/custom/cretan.py --frame 'frame_000169' --stage fine --env_double_splat
