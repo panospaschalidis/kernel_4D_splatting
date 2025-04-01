@@ -71,7 +71,9 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
     video_cams = scene.getVideoCameras()
     test_cams = scene.getTestCameras()
     train_cams = scene.getTrainCameras()
-
+    #------------------------------------------------------------#
+    gaussians.compute_3D_filter(cameras=train_cams)
+    #------------------------------------------------------------#
     if not viewpoint_stack and not opt.dataloader:
         # dnerf's branch
         viewpoint_stack = [i for i in train_cams]
@@ -321,11 +323,28 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
                 if  iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0 and gaussians.get_xyz.shape[0]<360000:
                     size_threshold = 20 if iteration > opt.opacity_reset_interval else None
                     
-                    gaussians.densify(densify_threshold, opacity_threshold, scene.cameras_extent, size_threshold, 5, 5, scene.model_path, iteration, stage)
+                    gaussians.densify(
+                        densify_threshold, 
+                        opacity_threshold, 
+                        scene.cameras_extent, 
+                        size_threshold, 5, 5, 
+                        scene.model_path, 
+                        iteration, stage)
+
+                    #------------------------------------------------------------#
+                    gaussians.compute_3D_filter(cameras=train_cams)
+                    #------------------------------------------------------------#
                 if  iteration > opt.pruning_from_iter and iteration % opt.pruning_interval == 0 and gaussians.get_xyz.shape[0]>200000:
                     size_threshold = 20 if iteration > opt.opacity_reset_interval else None
 
-                    gaussians.prune(densify_threshold, opacity_threshold, scene.cameras_extent, size_threshold)
+                    gaussians.prune(
+                        densify_threshold, 
+                        opacity_threshold, 
+                        scene.cameras_extent, 
+                        size_threshold)
+                    #------------------------------------------------------------#
+                    gaussians.compute_3D_filter(cameras=train_cams)
+                    #------------------------------------------------------------#
                     
                 # if iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0 :
                 if iteration % opt.densification_interval == 0 and gaussians.get_xyz.shape[0]<360000 and opt.add_point:
@@ -335,7 +354,13 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
                     print("reset opacity")
                     gaussians.reset_opacity()
                     
-            
+                #------------------------------------------------------------#
+                if iteration % 100 == 0 and iteration > opt.densify_until_iter:
+                    if iteration < opt.iterations - 100:
+                        # don't update in the end of training
+                        gaussians.compute_3D_filter(cameras=train_cams)      
+                #------------------------------------------------------------#
+           
 
             # Optimizer step
             if iteration < opt.iterations:

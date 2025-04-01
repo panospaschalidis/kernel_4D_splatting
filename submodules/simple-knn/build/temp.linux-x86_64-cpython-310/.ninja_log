@@ -1,0 +1,5 @@
+# ninja log v5
+0	8090	1715936420796647753	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o	a59647bc8c0a100c
+0	11555	1715936424260693191	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	5915ed6a410362d1
+0	28278	1715936440968912340	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o	3af15ee60d263496
+24	12529	1723185451258493059	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	5915ed6a410362d1

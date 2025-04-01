@@ -22,8 +22,10 @@ Network](https://openreview.net/forum?id=OmtmcPkkhT) is employed as a
 ![](./media/pipeline.png)
 ## Installation
 ```
-conda create --name ellipsis python=3.10
+conda env create --name kernel_splatting python=3.10
+conda activate kernel_splatting
 conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=12.4 -c pytorch -c nvidia
+pip install requirements.txt
 ```
 Regarding submodules directory we have made the following additions
 1. **diff_gaussian_rasterization_mip**
@@ -42,24 +44,54 @@ Regarding submodules directory we have made the following additions
     mfn network is activated not only with the Gaussian coords but the row and column indices that define the location where they are projected. 
     That being said this is a helper module written in C++ and OpenMP to further accelerate this indexing procedure.
 ```
+conda activate kernel_splatting
 cd submodules
-
+cd diff_gaussian_rasterization_mip
+python setup.py build_ext --inplace
+cd ../weighted_sampling_mfn_softmax_CUDA
+python setup.py build_ext --inplace
+cd ../mfn_softmax_CUDA
+python setup.py build_ext --inplace
+cd ../grid_indexing
+python setup.py build_ext --inplace
 ```
-
+If you are interested in the performance of our `mfn_softmax` network, navigate
+to [mfn_CUDA](https://github.com/panospaschalidis/mfn_CUDA), where there are
+time comparisons with our custom CUDA kernels and pytorch automatic
+differentiation.
 
 ## Data 
 From the available monocular videos  [CVD](https://roxanneluo.github.io/Consistent-Video-Depth-Estimation/), [DAVIS](https://davischallenge.org/), [NVIDIA](https://gorokee.github.io/jsyoon/dynamic_synth/), [Google](https://augmentedperception.github.io/deepviewvideo/) we selected `DAVIS` and `NVIDIA` as these are the only ones
 which correspond to actual dynamic motion fields. We tested our method and baselines to even more challenging 
 custom scenes as seen below in [Training](## Training) and [Evaluation](## Evaluation).
 To model your own scenes or any scene from the above datasets do the following.
-Run COLMAP
+```
+1. Install [COLMAP](https://colmap.github.io/install.html) following the designated guidelines.
+2. Run COLMAP and store the pose estimates
 Having obtained the colmap parameters run custom_colmap.sh to form a data directory in the same style as in [NeRFies](https://github.com/google/nerfies).
+That is why we run
+3. Run bash custom_colmap.sh
+```
 
 ## Training
+We experimented with even more challenging dymamic scenes such as the one presented below.
+Results were similar in terms of all metrics in the remaining two datasets. That is why we have included
+only the most challenging one, where we can see a man dancing "Pentozali".
 
 ![](./media/train.png)
-
+HexPlane is by far the most dominant during training as it tends to overfit extremely as a grid based model.
+Surprsingly enough worst performance is demonstreated by `ShapeofMotion` which was somehow expected as it is most focusewd on tracking and less to novel view synthesis.
 ## Evaluation
 
 ![](./media/test.png)
+
+Shape of motion utilizes the whole video sequence during training, thus there
+is no room left for inference.  The Iphone dataset and the modified NVIDIA
+12-frame dataset are special versions of dynamic scenes where static rigs of
+cameras were used to capture the scene. That being said when they refer to
+novel view synthesis they consider as novel view, a novel viewpoint for an
+already seen timestamp.  In our case we consider each timestamp as part of the
+camera parameters. Model can not see info for every timestamp and is challenged
+to accomodate the imposed difficulties.
+
 ![](./media/metrics.png)

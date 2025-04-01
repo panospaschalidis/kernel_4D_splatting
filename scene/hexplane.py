@@ -8,9 +8,6 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 from weighted_sampling_mfn_softmax import kernel_based_sampler
-#from weighted_sampling_mfn import kernel_based_sampler
-#from weighted_sampling_mfn_unnorm import kernel_based_sampler
-#from weighted_sampling_faster import kernel_based_sampler
 
 def get_normalized_directions(directions):
     """SH encoding must be in the range [0, 1]
@@ -48,12 +45,6 @@ def grid_sample_wrapper(
     coords = coords.view([coords.shape[0]] + [1] * (grid_dim - 1) + list(coords.shape[1:]))
     B, feature_dim = grid.shape[:2]
     n = coords.shape[-2]
-    #pdb.set_trace()
-    #interp = grid_sampler(
-    #    grid,  # [B, feature_dim, reso, ...]
-    #    coords,  # [B, 1, ..., n, grid_dim]
-    #    align_corners=align_corners,
-    #    mode='bilinear', padding_mode='border')
     interp = kernel_based_sampler(
         grid,  # [B, feature_dim, reso, ...]
         coords,  # [B, 1, ..., n, grid_dim]
@@ -119,8 +110,6 @@ def interpolate_ms_features(pts: torch.Tensor,
             )
             # compute product over planes
             interp_space = interp_space * interp_out_plane
-            #print(f"{scale_id},{ci}{interp_out_plane[116164,:]}")
-            #print(f"{scale_id},{ci}{interp_out_plane[123708,:]}")
         # combine over scales
         if concat_features:
             multi_scale_interp.append(interp_space)
