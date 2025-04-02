@@ -162,21 +162,12 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
 
             while idx < batch_size :    
                 viewpoint_cam = viewpoint_stack.pop(randint(0,len(viewpoint_stack)-1))
-                #viewpoint_cam = viewpoint_stack[130]   
-                #viewpoint_cam = viewpoint_stack[101]   
-                #viewpoint_cam = viewpoint_stack[40]   
-                #viewpoint_cam = viewpoint_stack[64]   
-                #viewpoint_cam = viewpoint_stack[117]   
-                #viewpoint_cam = viewpoint_stack[89]   
-                #viewpoint_cam = viewpoint_stack[64]   
                 if not viewpoint_stack :
                     viewpoint_stack =  temp_list.copy()
                 viewpoint_cams.append(viewpoint_cam)
                 idx +=1
             if len(viewpoint_cams) == 0:
                 continue
-        # print(len(viewpoint_cams))     
-        # breakpoint()   
         # Render
         if (iteration - 1) == debug_from:
             pipe.debug = True
@@ -186,9 +177,6 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
         visibility_filter_list = []
         viewspace_point_tensor_list = []
         for viewpoint_cam in viewpoint_cams:
-            #print(viewpoint_cam.frame_name)
-            #pdb.set_trace()
-            #print(viewpoint_cam.colmap_id)
             render_pkg = render(viewpoint_cam, gaussians, pipe, background, stage=stage,cam_type=scene.dataset_type)
             image, viewspace_point_tensor, visibility_filter, radii = render_pkg["render"], render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
             images.append(image.unsqueeze(0))
@@ -226,22 +214,18 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
         if opt.lambda_dssim != 0:
             ssim_loss = ssim(image_tensor,gt_image_tensor)
             loss += opt.lambda_dssim * (1.0-ssim_loss)
-        # if opt.lambda_lpips !=0:
-        #     lpipsloss = lpips_loss(image_tensor,gt_image_tensor,lpips_model)
-        #     loss += opt.lambda_lpips * lpipsloss
         loss.backward(retain_graph=True)
+        # nan gradient identifier
+        #------------------------------------------------------------#
         keys = ['_xyz', '_rotation', '_scaling', '_opacity', '_features_dc','_features_rest']    
         flag = 0
         if stage=='fine':
             for key in keys: 
                 if torch.isnan(getattr(gaussians, key).grad).any():
-                    #print(key)
                     flag += 1
             for name, param in gaussians._deformation.named_parameters():
                 if 'deform' in name and 'aabb' not in name and 'opacity' not in name and 'shs' not in name:
-                    #print(name)
                     if torch.isnan(param.grad).any():
-                        #print(name)
                         flag += 1
         if flag>0:
             for name, param in gaussians._deformation.named_parameters():
@@ -260,13 +244,8 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
             nan_pos = torch.where((torch.autograd.grad(loss,gaussians._scaling, retain_graph=True)[0]*0)!=0)[0]
             print(scales[nan_pos])
             pdb.set_trace()
+        #------------------------------------------------------------#
 
-
-
-        #if stage=='fine':
-        #    print(gaussians._deformation.deformation_net.grid.grids[0][2])
-        #    print(gaussians._deformation.deformation_net.grid.grids[0][2].grad)
-        #    pdb.set_trace()
         if torch.isnan(loss).any():
             print("loss is nan,end training, reexecv program now.")
             os.execv(sys.executable, [sys.executable] + sys.argv)
@@ -293,7 +272,7 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
             # a normal training session lasts arounf 28 minutes
             # by commenting training report you ll get to 12 minutes
             # of training time, with the expense of losing however the tensoboard info
-            #training_report(tb_writer, iteration, Ll1, loss, l1_loss, iter_start.elapsed_time(iter_end), testing_iterations, scene, render, [pipe, background], stage, scene.dataset_type)
+            training_report(tb_writer, iteration, Ll1, loss, l1_loss, iter_start.elapsed_time(iter_end), testing_iterations, scene, render, [pipe, background], stage, scene.dataset_type)
             if (iteration in saving_iterations):
                 print("\n[ITER {}] Saving Gaussians".format(iteration))
                 scene.save(iteration, stage)
@@ -301,12 +280,9 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
                 if (iteration < 1000 and iteration % 10 == 9) \
                     or (iteration < 3000 and iteration % 50 == 49) \
                         or (iteration < 60000 and iteration %  100 == 99) :
-                    # breakpoint()
                         render_training_image(scene, gaussians, [test_cams[iteration%len(test_cams)]], render, pipe, background, stage+"test", iteration,timer.get_elapsed_time(),scene.dataset_type)
                         render_training_image(scene, gaussians, [train_cams[iteration%len(train_cams)]], render, pipe, background, stage+"train", iteration,timer.get_elapsed_time(),scene.dataset_type)
-                        # render_training_image(scene, gaussians, train_cams, render, pipe, background, stage+"train", iteration,timer.get_elapsed_time(),scene.dataset_type)
 
-                    # total_images.append(to8b(temp_image).transpose(1,2,0))
             timer.start()
             # Densification
             if iteration < opt.densify_until_iter :
@@ -388,10 +364,6 @@ def training(dataset, hyper, opt, pipe, testing_iterations, saving_iterations, c
 
 def prepare_output_and_logger(expname):   
     if not args.model_path:
-        # if os.getenv('OAR_JOB_ID'):
-        #     unique_str=os.getenv('OAR_JOB_ID')
-        # else:
-        #     unique_str = str(uuid.uuid4())
         unique_str = expname
 
         args.model_path = os.path.join("./output/", unique_str)
@@ -496,8 +468,6 @@ if __name__ == "__main__":
         config = mmcv.Config.fromfile(args.configs)
         args = merge_hparams(args, config)
     print("Optimizing " + args.model_path)
-    #args.coarse_iterations = 2
-    #args.coarse_iterations = 1
     if args.start_checkpoint:
         args.iterations=28000
     # Initialize system state (RNG)
@@ -506,7 +476,6 @@ if __name__ == "__main__":
     # Start GUI server, configure and run training
     #network_gui.init(args.ip, args.port)
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
-    #args.coarse_iterations = 1
     training(lp.extract(args), hp.extract(args), op.extract(args), pp.extract(args), args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from, args.expname)
 
     # All done

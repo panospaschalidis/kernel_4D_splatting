@@ -49,21 +49,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
             prefiltered=False,
             debug=pipe.debug
         )
-        ## uncomment in case of double_splat env in order to obtain conic
-        #raster_settings = GaussianRasterizationSettings(
-        #    image_height=int(viewpoint_camera.image_height),
-        #    image_width=int(viewpoint_camera.image_width),
-        #    tanfovx=tanfovx,
-        #    tanfovy=tanfovy,
-        #    bg=bg_color,
-        #    scale_modifier=scaling_modifier,
-        #    viewmatrix=viewpoint_camera.world_view_transform.cuda(),
-        #    projmatrix=viewpoint_camera.full_proj_transform.cuda(),
-        #    sh_degree=pc.active_sh_degree,
-        #    campos=viewpoint_camera.camera_center.cuda(),
-        #    prefiltered=False,
-        #    gaussiansperpixel=False
-        #)
         time = torch.tensor(viewpoint_camera.time).to(means3D.device).repeat(means3D.shape[0],1)
     else:
         raster_settings = viewpoint_camera['camera']
@@ -72,11 +57,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
 
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
 
-    # means3D = pc.get_xyz
-    # add deformation to each points
-    # deformation = pc.get_deformation
-
-    
     means2D = screenspace_points
     opacity = pc._opacity
     shs = pc.get_features
@@ -95,10 +75,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     if "coarse" in stage:
         means3D_final, scales_final, rotations_final, opacity_final, shs_final = means3D, scales, rotations, opacity, shs
     elif "fine" in stage:
-        # time0 = get_time()
-        # means3D_deform, scales_deform, rotations_deform, opacity_deform = pc._deformation(means3D[deformation_point], scales[deformation_point], 
-        #                                                                  rotations[deformation_point], opacity[deformation_point],
-        #                                                                  time[deformation_point])
         means3D_final, scales_final, rotations_final, opacity_final, shs_final = pc._deformation(means3D, scales, 
                                                                  rotations, opacity, shs,
                                                                  time)
@@ -113,46 +89,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
         scales_final = pc.get_scaling_with_3D_filter(scales_final)
     
     rotations_final = pc.rotation_activation(rotations_final)
-    #R = build_rotation(rotations_final[52502,:].unsqueeze(0)).squeeze()
-    #S = torch.eye(3, device='cuda') * scales_final[52502,:]
-    #M = S@R
-    #Sigma = M.T@M
-    #limx = 1.3/tanfovx
-    #limy = 1.3/tanfovy
-    #viewmatrix =viewpoint_camera.world_view_transform.cuda()
-    #m3D_homog = torch.cat([means3D_final[52502,:],torch.ones(1, device='cuda')])
-    #t = (m3D_homog.unsqueeze(0) @ viewmatrix).squeeze()
-    #txtz = t[0]/t[2]
-    #tytz = t[1]/t[2]
-    #t_x = min(limx, max(-limx, txtz))*t[2]
-    #t_y = min(limy, max(-limy, tytz))*t[2]
-    #image_height=int(viewpoint_camera.image_height)
-    #image_width=int(viewpoint_camera.image_width)
-    #focal_y = image_height / (2 * tanfovy)
-    #focal_x = image_width / (2 * tanfovx)
-    #J = torch.tensor([
-    #    [focal_x/t[2], 0, -(focal_x*t[0])/(t[2]**2)],
-    #    [0, focal_y/t[2], -(focal_y*t[1])/(t[2]**2)],
-    #    [0,0,0]
-    #], device='cuda')
-    #W = viewmatrix.T[:3,:3]
-    #T = W@J
-    #cov = T.T 
-    #flag  = (torch.eye(3, device='cuda')==0)
-    #Vrk = (Sigma.triu() * flag).T + Sigma.triu()
-    #cov = T.T @ Vrk.T @ T
-    #cov[0][0] += 0.3
-    #cov[1][1] += 0.3
-    #cov2D = torch.tensor([cov[0][0]+0.3, cov[0][1], cov[1][1]+0.3])
-    #det = cov2D[0]*cov2D[2] - cov2D[1]**2
-    #conic = torch.tensor([cov2D[2]/det, -cov2D[1]/det, cov2D[0]/det])
-    #print(Sigma)
-    #print(S)
-    #pdb.set_trace()
-    # print(opacity.max())
-    # If precomputed colors are provided, use them. Otherwise, if it is desired to precompute colors
-    # from SHs in Python, do it. If not, then SH -> RGB conversion will be done by rasterizer.
-    # shs = None
     colors_precomp = None
     if override_color is None:
         if pipe.convert_SHs_python:
@@ -167,26 +103,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     else:
         colors_precomp = override_color
 
-    # Rasterize visible Gaussians to image, obtain their radii (on screen). 
-    # time3 = get_time()
-    #rendered_image, radii, depth = rasterizer(
-    #    means3D = means3D_final[:121670,:],
-    #    means2D = means2D[:121670,:],
-    #    shs = shs_final[:121670,:],
-    #    colors_precomp = colors_precomp,
-    #    opacities = opacity[:121670,:],
-    #    scales = scales_final[:121670,:],
-    #    rotations = rotations_final[:121670,:],
-    #    cov3D_precomp = cov3D_precomp)
-    #rendered_image, radii, depth = rasterizer(
-    #    means3D = means3D_final[5216:,:],
-    #    means2D = means2D[5216:,:],
-    #    shs = shs_final[5216:,:],
-    #    colors_precomp = colors_precomp,
-    #    opacities = opacity[5216:,:],
-    #    scales = scales_final[5216:,:],
-    #    rotations = rotations_final[5216:,:],
-    #    cov3D_precomp = cov3D_precomp)
     rendered_image, radii, depth = rasterizer(
         means3D = means3D_final,
         means2D = means2D,
@@ -202,21 +118,3 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
             "radii": radii,
             "depth":depth}
     
-    ## uncomment in case of double_splat env in order to obtain conic
-    #rendered_image, radii, depth, conic, _, _ = rasterizer(
-    #    means3D = means3D_final,
-    #    means2D = means2D,
-    #    shs = shs_final,
-    #    colors_precomp = colors_precomp,
-    #    opacities = opacity,
-    #    scales = scales_final,
-    #    rotations = rotations_final,
-    #    cov3D_precomp = cov3D_precomp)
-    #
-    #return {"render": rendered_image,
-    #        "viewspace_points": screenspace_points,
-    #        "visibility_filter" : radii > 0,
-    #        "radii": radii,
-    #        "depth":depth,
-    #        "conic":conic}
-

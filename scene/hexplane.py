@@ -26,7 +26,6 @@ def grid_sample_wrapper(
     mfn: nn.Module,
     index: int,
     align_corners: bool = True) -> torch.Tensor:
-    #pdb.set_trace()
     grid_dim = coords.shape[-1]
 
     if grid.dim() == grid_dim + 1:
@@ -155,7 +154,6 @@ class HexPlaneField(nn.Module):
                 out_dim=config["output_coordinate_dim"],
                 reso=config["resolution"]
             )
-            #pdb.set_trace()
             # shape[1] is out-dim - Concatenate over feature len for each scale
             if self.concat_features:
                 self.feat_dim += gp[-1].shape[1]
@@ -216,7 +214,6 @@ class HexPlaneField(nn.Module):
                 nn.init.uniform_(bout,-np.sqrt(1/in_dim),np.sqrt(1/in_dim)) 
                 mfn.append(bout)
                 self.mfns.append(mfn)
-        # print(f"Initialized model grids: {self.grids}")
         print("feature_dim:",self.feat_dim)
     @property
     def get_aabb(self):
@@ -235,7 +232,6 @@ class HexPlaneField(nn.Module):
         pts = normalize_aabb(pts, self.aabb)
         pts = torch.cat((pts, timestamps), dim=-1)  # [n_rays, n_samples, 4]
 
-        #pdb.set_trace()
         pts = pts.reshape(-1, pts.shape[-1])
         features = interpolate_ms_features(
             pts, 
