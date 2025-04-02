@@ -2,7 +2,7 @@
 
 This repo is built on top of
 [4D_Gaussians](https://github.com/hustvl/4DGaussians) and provides an
-alternative for better generalization during inference about novel view
+alternative for better generalization during inference regarding novel view
 synthesis from bounded monocular videos.  A conditioned to time hybrid
 deformation network comprised of a
 [HexPlane](https://github.com/Caoang327/HexPlane) representation and swallow
@@ -31,14 +31,14 @@ Regarding submodules directory we have made the following additions
 1. **diff_gaussian_rasterization_mip**
     Instead of the standard [GS](https://github.com/graphdeco-inria/gaussian-splatting) pipeline we use
     [mip splatting](https://arxiv.org/abs/2311.16493) that we have implemented on top of the vanilla one
-    in submodules/diff_gaussian_rasterization.
+    in submodules/diff_gaussian_rasterization_mip.
 2. **weighted_sampling_mfn_CUDA**
     We provide a grid sampling module that performs non-linear interpolation from the processed grids 
     during the forward pass and backpropagates the gradients to both the grids and Gaussian coordinates.
 3. **mfn_CUDA_softmax**
     The aforementioned kenrel function that provides the non-linear interpolation is a 2-layer **MFN** network.
     To accelerate training performance we have created custom CUDA kernels for estimating MFN's  `output` as well as 
-    loss gradients with respect to network parameters. Moreover, we provided the `Jacobian` as well since it is required
+    loss gradients with respect to network parameters. Moreover, we provid the `Jacobian` as well since it is required
     during Gaussians cords gradient estimation in **2**.
 4. **grid_indexing**
     mfn network is activated not only with the Gaussian coords but the row and column indices that define the location where they are projected. 
@@ -74,18 +74,18 @@ That is why we run
 ```
 ## Baselines
 All our baselines are 4D Gaussian Splatting frameworks that employ different strategies 
-to achive novel view synthesis
+to achieve novel view synthesis
 1. [4D-Gaussian-HexPlane](https://github.com/hustvl/4DGaussians)
 Pretty similar to ours with main difference in HexPlane interpolation.
 2. [4D-Gaussian-Rotor](https://github.com/weify627/4D-Rotor-Gaussians)
-Employing Rotor to model 4D rotations in order to create an actual 4D representaion
+Employing geometric algebra rotors to model 4D rotations in order to create an actual 4D representaion
 that can be optimized though bayesian probalistic identities.
 3. [4D-Gaussian-VanElfrinkof](https://github.com/fudan-zvg/4d-gaussian-splatting)
-Same with former baseline with only difference in the way they model 4D rotatios. Van 
+Same with former baseline with only difference in the way they model 4D rotations. Van 
 Elfrinkof formula is used for this cause.
 4. [Shape-of-Motion](https://github.com/vye16/shape-of-motion/)
 A whole differnet approach where a canonical set is deformed from frame to frame based on
-optimizable SE3 motion bases i.e. rotation and translation.
+optimizable SE3 motion bases i.e. rotations and translations.
 
 ## Training
 We experimented with even more challenging dymamic scenes such as the one presented below.
