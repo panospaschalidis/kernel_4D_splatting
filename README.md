@@ -48,6 +48,8 @@ conda activate kernel_splatting
 cd submodules
 cd diff_gaussian_rasterization_mip
 python setup.py build_ext --inplace
+cd ../simple_knn
+python setup.py build_ext --inplace
 cd ../weighted_sampling_mfn_softmax_CUDA
 python setup.py build_ext --inplace
 cd ../mfn_softmax_CUDA

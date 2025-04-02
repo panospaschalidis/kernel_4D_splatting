@@ -2,4 +2,11 @@
 0	8090	1715936420796647753	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o	a59647bc8c0a100c
 0	11555	1715936424260693191	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	5915ed6a410362d1
 0	28278	1715936440968912340	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o	3af15ee60d263496
-24	12529	1723185451258493059	/home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	5915ed6a410362d1
+0	12072	1721853172186456122	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	416f932f4af26d17
+1	29735	1721853189838689819	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o	f741eca3260b9433
+19	8636	1723185616500712991	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o	65c1135aa143feaa
+19	12785	1723185620652768815	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	996ed5443bab018c
+19	33057	1723185640909041184	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o	d5f408a2d7bff0f8
+60	8909	1724837606703642667	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o	d51413cbfdead8c
+60	12602	1724837610399692199	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o	76162257fe7a9999
+61	30291	1724837628071929020	/home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o	9ea7dbf223f0b0a

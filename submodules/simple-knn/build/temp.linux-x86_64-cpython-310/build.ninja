@@ -2,9 +2,9 @@ ninja_required_version = 1.3
 cxx = c++
 nvcc = /usr/local/cuda/bin/nvcc
 
-cflags = -pthread -B /home/panos/anaconda3/envs/gaus_hex/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/panos/anaconda3/envs/gaus_hex/include -fPIC -O2 -isystem /home/panos/anaconda3/envs/gaus_hex/include -fPIC -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/TH -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/THC -I/usr/local/cuda/include -I/home/panos/anaconda3/envs/gaus_hex/include/python3.10 -c
+cflags = -pthread -B /home/panos/anaconda3/envs/gaus_vElf/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/panos/anaconda3/envs/gaus_vElf/include -fPIC -O2 -isystem /home/panos/anaconda3/envs/gaus_vElf/include -fPIC -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/TH -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/THC -I/usr/local/cuda/include -I/home/panos/anaconda3/envs/gaus_vElf/include/python3.10 -c
 post_cflags = -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1011"' -DTORCH_EXTENSION_NAME=_C -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++17
-cuda_cflags = -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/TH -I/home/panos/anaconda3/envs/gaus_hex/lib/python3.10/site-packages/torch/include/THC -I/usr/local/cuda/include -I/home/panos/anaconda3/envs/gaus_hex/include/python3.10 -c
+cuda_cflags = -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/TH -I/home/panos/anaconda3/envs/gaus_vElf/lib/python3.10/site-packages/torch/include/THC -I/usr/local/cuda/include -I/home/panos/anaconda3/envs/gaus_vElf/include/python3.10 -c
 cuda_post_cflags = -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1011"' -DTORCH_EXTENSION_NAME=_C -D_GLIBCXX_USE_CXX11_ABI=0 -gencode=arch=compute_86,code=compute_86 -gencode=arch=compute_86,code=sm_86 -std=c++17
 cuda_dlink_post_cflags = 
 ldflags = 
@@ -23,9 +23,9 @@ rule cuda_compile
 
 
 
-build /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o: compile /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/ext.cpp
-build /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o: cuda_compile /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/simple_knn.cu
-build /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o: cuda_compile /home/panos/workspace/internship_repos/4d-gaussian-hexplane/submodules/simple-knn/spatial.cu
+build /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/ext.o: compile /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/ext.cpp
+build /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/simple_knn.o: cuda_compile /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/simple_knn.cu
+build /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/build/temp.linux-x86_64-cpython-310/spatial.o: cuda_compile /home/panos/workspace/internship_repos/kernel_4D_splatting/submodules/simple-knn/spatial.cu
 
 
 

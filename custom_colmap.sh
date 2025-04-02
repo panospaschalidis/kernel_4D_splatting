@@ -2,10 +2,10 @@ workdir=$1
 mkdir data/custom/$workdir/
 mkdir data/custom/$workdir/rgb/
 mkdir data/custom/$workdir/rgb/1x
-cp -fr ~/workspace/internship_repos/CVD/output/$workdir/color_full/* data/custom/$workdir/rgb/1x
-cp -fr ~/workspace/internship_repos/CVD/output/$workdir/colmap_dense data/custom/$workdir/
+cp -fr ~/workspace/internship_repos/colmap_params/output/$workdir/color_full/* data/custom/$workdir/rgb/1x
+cp -fr ~/workspace/internship_repos/colmap_params/output/$workdir/colmap_dense data/custom/$workdir/
 mv data/custom/$workdir/colmap_dense data/custom/$workdir/colmap
-cp -fr ~/workspace/internship_repos/CVD/output/$workdir/frames.txt data/custom/$workdir/
+cp -fr ~/workspace/internship_repos/colmap_params/output/$workdir/frames.txt data/custom/$workdir/
 cp -fr data/custom/cretan/*.py data/custom/$workdir
 cd data/custom/$workdir/
 python create_camera_dir.py 
