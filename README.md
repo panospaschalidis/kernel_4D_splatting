@@ -67,7 +67,6 @@ From the available monocular videos  [CVD](https://roxanneluo.github.io/Consiste
 which correspond to actual dynamic motion fields. We tested our method and baselines to even more challenging 
 custom scenes as seen below in [Training](## Training) and [Evaluation](## Evaluation).
 To model your own scenes or any scene from the above datasets do the following.
-```
 1. Install [COLMAP](https://colmap.github.io/install.html) following the designated guidelines.
 2. Store your let us say `video_name.mp4` video at `videos` directory and then run
 ```
