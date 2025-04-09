@@ -28,7 +28,7 @@ conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=
 pip install requirements.txt
 ```
 Regarding submodules directory we have made the following additions
-1. **diff_gaussian_rasterization_mip**
+1. **diff-gaussian-rasterization-mip**
     Instead of the standard [GS](https://github.com/graphdeco-inria/gaussian-splatting) pipeline we use
     [mip splatting](https://arxiv.org/abs/2311.16493) that we have implemented on top of the vanilla one
     in submodules/diff_gaussian_rasterization_mip.
@@ -69,11 +69,14 @@ custom scenes as seen below in [Training](## Training) and [Evaluation](## Evalu
 To model your own scenes or any scene from the above datasets do the following.
 ```
 1. Install [COLMAP](https://colmap.github.io/install.html) following the designated guidelines.
-2. Run COLMAP and store the pose estimates
-Having obtained the colmap parameters run custom_colmap.sh to form a data directory in the same style as in [NeRFies](https://github.com/google/nerfies).
-That is why we run
-3. Run bash custom_colmap.sh
+2. Store your let us say `video_name.mp4` video at `videos` directory and then run
 ```
+bash custom_colmap.sh **video_name**
+```
+This command will create a subdirectory `video_name` inside `data/custom` directory that formulates
+data in the same style as in [NeRFies](https://github.com/google/nerfies).
+
+Now you are ready to run our model.
 ## Baselines
 All our baselines are 4D Gaussian Splatting frameworks that employ different strategies 
 to achieve novel view synthesis
@@ -90,6 +93,9 @@ A whole differnet approach where a canonical set is deformed from frame to frame
 optimizable SE3 motion bases i.e. rotations and translations.
 
 ## Training
+```
+python train.py -s data/custom/**video_name** --port 6017 --expname "custom/**video_name**" --configs arguments/custom/custom.py
+```
 We experimented with even more challenging dymamic scenes such as the one presented below.
 Results were similar in terms of all metrics in the remaining two datasets. That is why we have included
 only the most challenging one, where we can see a man dancing "Pentozali".
@@ -100,7 +106,9 @@ Surprisingly enough worst performance is demonstreated by `ShapeofMotion` both q
 ![](./media/shape_of_motion.png)
 which was somehow expected as it is mostly focused on tracking and less to novel view synthesis.
 ## Evaluation
-
+```
+python render.py --model_path output/CVD/**video_name** --skip_train --configs arguments/custom/custom.py
+```
 ![](./media/test.png)
 
 Shape of motion utilizes the whole video sequence during training, thus there
@@ -112,4 +120,9 @@ already seen timestamp.  In our case we consider each timestamp as part of the
 camera parameters. Model can not see info for every timestamp and is challenged
 to accomodate the imposed difficulties.
 
+Concerning metrics computation posterior to a 14000 iterations optimization run the
+following
+```
+python metrics.py --target output/custom/**video_name**/test/ours_14000/gt/ --predicted output/custom/**video_name**/test/ours_14000/renders/
+```
 ![](./media/metrics.png)

@@ -10,4 +10,8 @@
 *.npz
 *.jpg
 *.whl
-
+*.mp4
+*.ply
+*.json
+*.db
+*.bin
